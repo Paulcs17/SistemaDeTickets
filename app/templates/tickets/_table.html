@@ -1,0 +1,20 @@
+<div class="table-responsive">
+<table class="table modern-table align-middle">
+<thead><tr><th>Código</th><th>Título</th><th class="d-none d-md-table-cell">Estado</th><th class="d-none d-lg-table-cell">Prioridad</th><th class="d-none d-xl-table-cell">Departamento</th><th class="d-none d-lg-table-cell">Fecha</th><th></th></tr></thead>
+<tbody>
+{% for ticket in tickets %}
+<tr>
+  <td class="fw-semibold">{{ ticket.code }}</td>
+  <td><div class="fw-semibold">{{ ticket.title }}</div><div class="small text-muted d-md-none">{{ ticket.status }} · {{ ticket.priority }}</div></td>
+  <td class="d-none d-md-table-cell"><span class="badge soft-badge">{{ ticket.status }}</span></td>
+  <td class="d-none d-lg-table-cell"><span class="badge priority-{{ ticket.priority|lower|replace('í','i')|replace('á','a') }}">{{ ticket.priority }}</span></td>
+  <td class="d-none d-xl-table-cell">{{ ticket.department }}</td>
+  <td class="d-none d-lg-table-cell">{{ ticket.created_at.strftime('%d-%m-%Y') }}</td>
+  <td><a href="{{ url_for('tickets.ticket_detail', ticket_id=ticket.id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">Ver</a></td>
+</tr>
+{% else %}
+<tr><td colspan="7" class="text-center text-muted py-5">No hay tickets para mostrar.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>

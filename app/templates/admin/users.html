@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Usuarios | MuniDesk{% endblock %}
+{% block content %}
+<div class="mb-4"><div class="section-kicker">Administración</div><h1 class="h2 fw-bold mb-1">Usuarios demo</h1><p class="text-secondary mb-0">Listado simple de usuarios cargados para la demostración.</p></div>
+<div class="card modern-card"><div class="card-body p-4"><div class="table-responsive"><table class="table modern-table align-middle"><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Departamento</th></tr></thead><tbody>{% for user in users %}<tr><td>{{ user.name }}</td><td>{{ user.email }}</td><td>{{ user.role }}</td><td>{{ user.department or '-' }}</td></tr>{% else %}<tr><td colspan="4" class="text-center text-muted py-5">No hay usuarios.</td></tr>{% endfor %}</tbody></table></div></div></div>
+{% endblock %}

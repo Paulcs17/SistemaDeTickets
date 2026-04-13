@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Entrar | MuniDesk{% endblock %}
+{% block content %}
+<div class="row g-4 align-items-stretch">
+  <div class="col-lg-5">
+    <div class="glass-card h-100">
+      <div class="mb-4">
+        <div class="section-kicker">Acceso demo</div>
+        <h1 class="h2 fw-bold mb-2">Inicia sesión y prueba el flujo completo</h1>
+        <p class="text-secondary mb-0">Cuentas listas para que cualquiera entre desde tu portafolio.</p>
+      </div>
+      <div class="stack-demo">
+        {% for item in demo_users %}
+        <div class="demo-user-card"><div class="fw-semibold">{{ item.role }}</div><div class="small text-muted">{{ item.email }}</div><div class="small">Clave: {{ item.password }}</div></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="glass-card h-100">
+      <h2 class="h3 fw-bold mb-3">Ingreso al sistema</h2>
+      <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">{{ form.email.label(class='form-label') }}{{ form.email(class='form-control form-control-lg rounded-4', placeholder='jefe@municipalidad.cl') }}</div>
+        <div class="mb-4">{{ form.password.label(class='form-label') }}{{ form.password(class='form-control form-control-lg rounded-4', placeholder='123456') }}</div>
+        <div class="d-grid d-sm-flex gap-3">
+          {{ form.submit(class='btn btn-primary btn-lg rounded-pill px-4') }}
+          <a href="{{ url_for('auth.home') }}" class="btn btn-outline-dark btn-lg rounded-pill px-4">Volver</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
