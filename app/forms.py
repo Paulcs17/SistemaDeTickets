@@ -1,31 +1,59 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField, BooleanField
-from wtforms.validators import DataRequired, Email, Length
+from wtforms.validators import DataRequired, Email, Length, Optional
 
-CATEGORIES = [("Hardware","Hardware"),("Software","Software"),("Red e Internet","Red e Internet"),("Correo institucional","Correo institucional"),("Impresoras","Impresoras"),("Accesos y cuentas","Accesos y cuentas"),("Mantención","Mantención"),("Otro","Otro")]
-PRIORITIES = [("Baja","Baja"),("Media","Media"),("Alta","Alta"),("Crítica","Crítica")]
-STATUSES = [("Nuevo","Nuevo"),("En revisión","En revisión"),("Asignado","Asignado"),("En proceso","En proceso"),("Resuelto","Resuelto"),("Cerrado","Cerrado"),("Reabierto","Reabierto")]
+CATEGORIES = [
+    ("hardware", "Hardware"),
+    ("software", "Software"),
+    ("network", "Network & Internet"),
+    ("email", "Email"),
+    ("printers", "Printers"),
+    ("accounts", "Accounts & Access"),
+    ("maintenance", "Maintenance"),
+    ("other", "Other"),
+]
+
+PRIORITIES = [
+    ("low", "Low"),
+    ("medium", "Medium"),
+    ("high", "High"),
+    ("critical", "Critical"),
+]
+
+STATUSES = [
+    ("new", "New"),
+    ("review", "Under Review"),
+    ("assigned", "Assigned"),
+    ("in_progress", "In Progress"),
+    ("resolved", "Resolved"),
+    ("closed", "Closed"),
+    ("reopened", "Reopened"),
+]
+
 
 class LoginForm(FlaskForm):
-    email = StringField("Correo", validators=[DataRequired(), Email()])
-    password = PasswordField("Contraseña", validators=[DataRequired()])
-    submit = SubmitField("Ingresar")
+    email = StringField("Email address", validators=[DataRequired(), Email()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Sign in")
+
 
 class TicketForm(FlaskForm):
-    title = StringField("Título", validators=[DataRequired(), Length(max=160)])
-    description = TextAreaField("Descripción", validators=[DataRequired(), Length(min=10)])
-    category = SelectField("Categoría", choices=CATEGORIES, validators=[DataRequired()])
-    priority = SelectField("Prioridad", choices=PRIORITIES, validators=[DataRequired()])
-    department = StringField("Departamento", validators=[DataRequired(), Length(max=120)])
-    submit = SubmitField("Crear ticket")
+    title = StringField("Title", validators=[DataRequired(), Length(max=160)])
+    description = TextAreaField("Description", validators=[DataRequired(), Length(min=10)])
+    category = SelectField("Category", choices=CATEGORIES, validators=[DataRequired()])
+    priority = SelectField("Priority", choices=PRIORITIES, validators=[DataRequired()])
+    department = StringField("Department", validators=[DataRequired(), Length(max=120)])
+    submit = SubmitField("Create Ticket")
+
 
 class CommentForm(FlaskForm):
-    content = TextAreaField("Comentario", validators=[DataRequired(), Length(min=2)])
-    internal = BooleanField("Comentario interno")
-    submit = SubmitField("Agregar comentario")
+    content = TextAreaField("Comment", validators=[DataRequired(), Length(min=2)])
+    internal = BooleanField("Internal note")
+    submit = SubmitField("Add Comment")
+
 
 class AssignmentForm(FlaskForm):
-    technician_id = SelectField("Técnico", coerce=int, validators=[DataRequired()])
-    status = SelectField("Estado", choices=STATUSES, validators=[DataRequired()])
-    priority = SelectField("Prioridad", choices=PRIORITIES, validators=[DataRequired()])
-    submit = SubmitField("Guardar cambios")
+    technician_id = SelectField("Technician", coerce=int, validators=[Optional()])
+    status = SelectField("Status", choices=STATUSES, validators=[DataRequired()])
+    priority = SelectField("Priority", choices=PRIORITIES, validators=[DataRequired()])
+    submit = SubmitField("Save Changes")

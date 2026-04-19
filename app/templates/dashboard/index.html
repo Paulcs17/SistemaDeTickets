@@ -1,15 +1,60 @@
 {% extends 'base.html' %}
 {% block title %}Dashboard | MuniDesk{% endblock %}
+
 {% block content %}
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
-  <div><div class="section-kicker">Panel principal</div><h1 class="h2 fw-bold mb-1">Hola, {{ current_user.name }}</h1><p class="text-secondary mb-0">Resumen rápido del sistema de tickets.</p></div>
-  {% if current_user.role == 'solicitante' %}<a href="{{ url_for('tickets.create_ticket') }}" class="btn btn-primary rounded-pill px-4">Crear ticket</a>{% endif %}
+  <div>
+    <div class="section-kicker">Main Dashboard</div>
+    <h1 class="h2 fw-bold mb-1">Hello, {{ current_user.name }}</h1>
+    <p class="text-secondary mb-0">A quick overview of your ticket system.</p>
+  </div>
+
+  {% if current_user.role in ['requester', 'admin'] %}
+    <a href="{{ url_for('tickets.create_ticket') }}" class="btn btn-primary rounded-pill px-4">
+      Create Ticket
+    </a>
+  {% endif %}
 </div>
+
 <div class="row g-3 g-lg-4 mb-4">
-  <div class="col-6 col-xl-3"><div class="stat-card"><div class="stat-label">Total</div><div class="stat-value">{{ stats.total }}</div></div></div>
-  <div class="col-6 col-xl-3"><div class="stat-card"><div class="stat-label">Nuevos</div><div class="stat-value">{{ stats.nuevo }}</div></div></div>
-  <div class="col-6 col-xl-3"><div class="stat-card"><div class="stat-label">En proceso</div><div class="stat-value">{{ stats.proceso }}</div></div></div>
-  <div class="col-6 col-xl-3"><div class="stat-card"><div class="stat-label">Resueltos</div><div class="stat-value">{{ stats.resuelto }}</div></div></div>
+  <div class="col-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-label">Total Tickets</div>
+      <div class="stat-value">{{ stats.total }}</div>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-label">New</div>
+      <div class="stat-value">{{ stats.new }}</div>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-label">In Progress</div>
+      <div class="stat-value">{{ stats.in_progress }}</div>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-label">Resolved</div>
+      <div class="stat-value">{{ stats.resolved }}</div>
+    </div>
+  </div>
 </div>
-<div class="card modern-card"><div class="card-body p-4"><div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h4 fw-bold mb-0">Tickets recientes</h2><a href="{{ url_for('tickets.list_tickets') }}" class="btn btn-sm btn-outline-primary rounded-pill">Ver todos</a></div>{% include 'tickets/_table.html' %}</div></div>
+
+<div class="card modern-card">
+  <div class="card-body p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h4 fw-bold mb-0">Recent Tickets</h2>
+      <a href="{{ url_for('tickets.list_tickets') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+        View All
+      </a>
+    </div>
+    {% include 'tickets/_table.html' %}
+  </div>
+</div>
 {% endblock %}

@@ -1,6 +1,18 @@
 {% extends 'base.html' %}
-{% block title %}Administración de tickets | MuniDesk{% endblock %}
+{% block title %}Ticket Administration | MuniDesk{% endblock %}
+
 {% block content %}
-<div class="mb-4"><div class="section-kicker">Administración</div><h1 class="h2 fw-bold mb-1">Todos los tickets</h1><p class="text-secondary mb-0">Vista completa de tickets para el rol jefe.</p></div>
-<div class="card modern-card"><div class="card-body p-4">{% include 'tickets/_table.html' %}</div></div>
+<div class="mb-4">
+  <div class="section-kicker">Administration</div>
+  <h1 class="h2 fw-bold mb-1">All Tickets</h1>
+  <p class="text-secondary mb-0">Complete ticket view for the admin role.</p>
+</div>
+<a href="{{ url_for('tickets.create_ticket') }}" class="btn btn-primary rounded-pill px-4">
+  Create Ticket
+</a>
+<div class="card modern-card">
+  <div class="card-body p-4">
+    {% include 'tickets/_table.html' %}
+  </div>
+</div>
 {% endblock %}

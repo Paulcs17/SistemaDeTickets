@@ -6,8 +6,32 @@ from config import Config
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
-login_manager.login_message = "Debes iniciar sesión para continuar."
+login_manager.login_message = "Please sign in to continue."
 login_manager.login_message_category = "warning"
+
+ROLE_LABELS = {
+    "admin": "Admin",
+    "technician": "Technician",
+    "requester": "Requester",
+}
+
+STATUS_LABELS = {
+    "new": "New",
+    "review": "Under Review",
+    "assigned": "Assigned",
+    "in_progress": "In Progress",
+    "resolved": "Resolved",
+    "closed": "Closed",
+    "reopened": "Reopened",
+}
+
+PRIORITY_LABELS = {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "critical": "Critical",
+}
+
 
 def create_app():
     app = Flask(__name__, instance_relative_config=True)
@@ -25,6 +49,14 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
 
+    @app.context_processor
+    def inject_labels():
+        return {
+            "ROLE_LABELS": ROLE_LABELS,
+            "STATUS_LABELS": STATUS_LABELS,
+            "PRIORITY_LABELS": PRIORITY_LABELS,
+        }
+
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(tickets_bp)
@@ -34,7 +66,7 @@ def create_app():
     def init_db():
         db.drop_all()
         db.create_all()
-        print("Base de datos creada correctamente.")
+        print("Database created successfully.")
 
     @app.cli.command("seed-data")
     def seed_data():
@@ -46,28 +78,114 @@ def create_app():
         User.query.delete()
         db.session.commit()
 
-        jefe = User(name="María Soto", email="jefe@municipalidad.cl", password_hash=generate_password_hash("123456"), role="jefe", department="Informática", active=True)
-        tecnico = User(name="Luis Ramírez", email="tecnico@municipalidad.cl", password_hash=generate_password_hash("123456"), role="tecnico", department="Informática", active=True)
-        funcionario = User(name="Ana Pérez", email="funcionario@municipalidad.cl", password_hash=generate_password_hash("123456"), role="solicitante", department="Finanzas", active=True)
-        db.session.add_all([jefe, tecnico, funcionario])
+        admin = User(
+            name="Maria Soto",
+            email="admin@munidesk.com",
+            password_hash=generate_password_hash("123456"),
+            role="admin",
+            department="IT",
+            active=True,
+        )
+        technician = User(
+            name="Luis Ramirez",
+            email="technician@munidesk.com",
+            password_hash=generate_password_hash("123456"),
+            role="technician",
+            department="IT",
+            active=True,
+        )
+        requester = User(
+            name="Ana Perez",
+            email="requester@munidesk.com",
+            password_hash=generate_password_hash("123456"),
+            role="requester",
+            department="Finance",
+            active=True,
+        )
+
+        db.session.add_all([admin, technician, requester])
         db.session.commit()
 
-        t1 = Ticket(code="MUNI-2026-0001", title="Impresora no responde", description="La impresora principal del departamento de Finanzas dejó de imprimir.", category="Impresoras", priority="Alta", status="En proceso", department="Finanzas", requester_id=funcionario.id, technician_id=tecnico.id)
-        t2 = Ticket(code="MUNI-2026-0002", title="Instalación de Office", description="Se necesita instalar Office en un nuevo equipo de Secretaría.", category="Software", priority="Media", status="Nuevo", department="Secretaría", requester_id=funcionario.id)
-        t3 = Ticket(code="MUNI-2026-0003", title="Acceso a correo institucional", description="No es posible iniciar sesión en el correo municipal.", category="Correo institucional", priority="Crítica", status="Resuelto", department="Recursos Humanos", requester_id=funcionario.id, technician_id=tecnico.id)
-        db.session.add_all([t1, t2, t3]); db.session.commit()
+        t1 = Ticket(
+            code="MUNI-2026-0001",
+            title="Main printer is not responding",
+            description="The main printer in the Finance department stopped working and users cannot print documents.",
+            category="Printers",
+            priority="high",
+            status="in_progress",
+            department="Finance",
+            requester_id=requester.id,
+            technician_id=technician.id,
+        )
+        t2 = Ticket(
+            code="MUNI-2026-0002",
+            title="Office installation request",
+            description="A new workstation in the Administration office needs Microsoft Office installed.",
+            category="Software",
+            priority="medium",
+            status="new",
+            department="Administration",
+            requester_id=requester.id,
+        )
+        t3 = Ticket(
+            code="MUNI-2026-0003",
+            title="Cannot access institutional email",
+            description="The user cannot sign in to the municipal email account and needs urgent access restored.",
+            category="Email",
+            priority="critical",
+            status="resolved",
+            department="Human Resources",
+            requester_id=requester.id,
+            technician_id=technician.id,
+        )
 
-        h = [
-            TicketHistory(ticket_id=t1.id, user_id=funcionario.id, action="Creación", detail="Ticket creado con estado Nuevo."),
-            TicketHistory(ticket_id=t1.id, user_id=jefe.id, action="Asignación", detail="Ticket asignado al técnico Luis Ramírez."),
-            TicketHistory(ticket_id=t1.id, user_id=tecnico.id, action="Estado", detail="Estado cambiado a En proceso."),
-            TicketHistory(ticket_id=t3.id, user_id=tecnico.id, action="Resolución", detail="Se restableció el acceso al correo."),
+        db.session.add_all([t1, t2, t3])
+        db.session.commit()
+
+        history_entries = [
+            TicketHistory(
+                ticket_id=t1.id,
+                user_id=requester.id,
+                action="Ticket created",
+                detail="Ticket created with status New.",
+            ),
+            TicketHistory(
+                ticket_id=t1.id,
+                user_id=admin.id,
+                action="Assigned",
+                detail="Ticket assigned to Luis Ramirez.",
+            ),
+            TicketHistory(
+                ticket_id=t1.id,
+                user_id=technician.id,
+                action="Status updated",
+                detail="Status changed to In Progress.",
+            ),
+            TicketHistory(
+                ticket_id=t3.id,
+                user_id=technician.id,
+                action="Resolved",
+                detail="Email access was restored successfully.",
+            ),
         ]
-        c = [
-            TicketComment(ticket_id=t1.id, user_id=tecnico.id, content="Se revisó el cableado y la cola de impresión.", internal=False),
-            TicketComment(ticket_id=t3.id, user_id=tecnico.id, content="La cuenta estaba bloqueada por intentos fallidos.", internal=False),
+
+        comments = [
+            TicketComment(
+                ticket_id=t1.id,
+                user_id=technician.id,
+                content="I checked the print queue and verified the cable connection.",
+                internal=False,
+            ),
+            TicketComment(
+                ticket_id=t3.id,
+                user_id=technician.id,
+                content="The account was locked after multiple failed login attempts.",
+                internal=False,
+            ),
         ]
-        db.session.add_all(h + c); db.session.commit()
-        print("Datos demo creados correctamente.")
+
+        db.session.add_all(history_entries + comments)
+        db.session.commit()
+        print("Demo data created successfully.")
 
     return app
