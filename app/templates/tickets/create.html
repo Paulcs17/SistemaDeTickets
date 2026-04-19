@@ -39,6 +39,20 @@
             </div>
           </div>
 
+          {% if current_user.role == 'admin' %}
+          <div class="row g-3 mt-1">
+            <div class="col-md-6">
+              {{ form.requester_id.label(class='form-label') }}
+              {{ form.requester_id(class='form-select rounded-4') }}
+            </div>
+
+            <div class="col-md-6">
+              {{ form.technician_id.label(class='form-label') }}
+              {{ form.technician_id(class='form-select rounded-4') }}
+            </div>
+          </div>
+          {% endif %}
+
           <div class="d-flex flex-column flex-sm-row gap-3 mt-4">
             {{ form.submit(class='btn btn-primary rounded-pill px-4') }}
             <a href="{{ url_for('tickets.list_tickets') }}" class="btn btn-outline-dark rounded-pill px-4">Cancel</a>

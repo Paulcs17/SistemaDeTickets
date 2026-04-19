@@ -43,6 +43,10 @@ class TicketForm(FlaskForm):
     category = SelectField("Category", choices=CATEGORIES, validators=[DataRequired()])
     priority = SelectField("Priority", choices=PRIORITIES, validators=[DataRequired()])
     department = StringField("Department", validators=[DataRequired(), Length(max=120)])
+
+    requester_id = SelectField("Requester", coerce=int, validators=[Optional()], choices=[])
+    technician_id = SelectField("Technician", coerce=int, validators=[Optional()], choices=[])
+
     submit = SubmitField("Create Ticket")
 
 
